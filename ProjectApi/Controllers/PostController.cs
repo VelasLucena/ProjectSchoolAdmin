@@ -1,30 +1,40 @@
 using InfoEnum;
-using Microsoft.AspNetCore.Mvc;
 using ProfileModels;
-using ProjectApi.Code;
-using System.Net;
+using ProjectApi.ValidationApi;
+using ProjectApi.SystemDAO;
+using Newtonsoft.Json;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using ProjectApi.Mapper;
 
 namespace ProjectApi.Controllers
 {
-    [ApiController]
-    [Route("[Action]")]
-    public class PostController : ControllerBase
+    public class PostController : Controller
     {
         [HttpPost]
-        [ActionName("CreateUser")]
-        public async Task<IActionResult> CreateUser(UserModel createUser)
+        public async Task<IActionResult> CreateUser()
         {
+            bool result;
 
             try
             {
-                if(createUser.Office != Office.Student)
+                JsonRequest jsonRequest = new JsonRequest();
+                using (var reader = new StreamReader(this.Request.Body,
+                              encoding: Encoding.UTF8, detectEncodingFromByteOrderMarks: false))
                 {
-                    bool validCpf = await Validation.ValidateCPF(createUser.RegisterNumber);
+                    jsonRequest.json = await reader.ReadToEndAsync();
+                }
 
-                    if (!validCpf)
-                    {
+                UserModel createUser = UserMapper.UserInputMapper(jsonRequest.json);
+
+                bool modelValid = Validation.ValidUserCreation(createUser);
+
+                if (ModelState.IsValid)
+                {
+                    result = SchemaProfileDAO.InsertUser(createUser);
+
+                    if (result.Equals(false))
                         return BadRequest();
-                    }
                 }
 
             }

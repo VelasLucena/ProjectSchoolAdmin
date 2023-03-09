@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectApi.Context;
+using System.Web.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,8 @@ app.UseHttpsRedirection();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller}/{action}");
+    pattern: "api/{controller}/{action}/{id}",
+    defaults: new { id = RouteParameter.Optional, Action = RouteParameter.Optional } );
 
 app.UseAuthorization();
 

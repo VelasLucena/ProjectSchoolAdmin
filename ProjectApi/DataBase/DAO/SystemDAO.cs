@@ -17,11 +17,13 @@ namespace ProjectApi.SystemDAO
 
             try
             {
+                token.ExpirationDate = DateTime.Now;
+
                 object consult = token;
 
                 datatable = ConnectDataBase.DbGet(Procedures.GetTokenByDate, SchemaDB.System, consult);
 
-                if (datatable != null)
+                if (datatable.Rows.Count > 0)
                 {
                     foreach (DataRow row in datatable.Rows)
                     {
@@ -73,6 +75,8 @@ namespace ProjectApi.SystemDAO
 
             try
             {
+                token.ExpirationDate = DateTime.Now;
+
                 object consult = token;
 
                 dataRow = ConnectDataBase.DbGet(Procedures.GetTokenByDate, SchemaDB.System, consult);

@@ -8,26 +8,46 @@ namespace ProjectApi.ConnectDB
 {
     public class ConnectDataBase
     {
-        public static DataTable DbPost(string procedure, SchemaDB schema, object parameters)
+        public static bool DbPost(Procedures proc, SchemaDB schema, List<object> parameters)
         {
+            string? procedure = Enum.GetName(typeof(Procedures), proc);
+
             ConnectStringManager manager = new ConnectStringManager();
 
-            using (MySqlConnection connection = new MySqlConnection(manager.GetConnectString(schema)))
+            DataTable data = new DataTable();
+
+            string connecString = manager.GetConnectString(schema);
+
+            using (MySqlConnection connection = new MySqlConnection(connecString))
             {
-                using(MySqlCommand command = new MySqlCommand(procedure, connection))
+                using (MySqlCommand command = new MySqlCommand(procedure, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    foreach(PropertyInfo model in parameters.GetType().GetProperties())
+                    List<string> paramList = new List<string>();
+
+                    foreach(var parameter in parameters)
                     {
-                        command.Parameters.AddWithValue("Param" + model.Name, model.GetValue(parameters, null));
+                        foreach (PropertyInfo model in parameter.GetType().GetProperties())
+                        {
+                            string param = "Param" + model.Name;
+
+                            if (!paramList.Any(s => param.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0))
+                            {
+                                command.Parameters.AddWithValue(param, model.GetValue(parameter, null));
+                                paramList.Add(param);
+                            }
+                        }
                     }
-                    command.Connection.Open();
-                    var result = command.ExecuteNonQuery();
-                    command.Connection.Close();
+
+                    connection.Open();
+
+                    data.Load(command.ExecuteReader());
+
+                    connection.Close();
                 }
 
-                return null;
+                return true;
             }
         }
 
@@ -39,7 +59,9 @@ namespace ProjectApi.ConnectDB
 
             DataTable data = new DataTable();
 
-            using (MySqlConnection connection = new MySqlConnection(manager.GetConnectString(schema)))
+            string connecString = manager.GetConnectString(schema);
+
+            using (MySqlConnection connection = new MySqlConnection(connecString))
             {
                 using (MySqlCommand command = new MySqlCommand(procedure, connection))
                 {
@@ -50,11 +72,11 @@ namespace ProjectApi.ConnectDB
                         command.Parameters.AddWithValue("Param" + model.Name, model.GetValue(parameters, null));
                     }
 
-                    command.Connection.Open();
+                    connection.Open();
 
                     data.Load(command.ExecuteReader());
 
-                    command.Connection.Close();
+                    connection.Close();
                 }
 
                 return data;
