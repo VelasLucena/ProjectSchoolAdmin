@@ -16,8 +16,10 @@ namespace ServicesEnum
     {
         InserToken = 1,
         GetTokenByDate = 2,
-        GetUserByRegisterNumber = 3,
-        InsertUser = 4
+        GetUserByRegisterNumberAndPassword = 3,
+        InsertUser = 4,
+        GetUserById = 5,
+        GetUserByRegisterNumber = 6
     }
 
     public enum TokenType

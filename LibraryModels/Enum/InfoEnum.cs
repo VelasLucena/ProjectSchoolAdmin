@@ -3,12 +3,12 @@ namespace InfoEnum
 {
     public enum Office
     {
-        Student = 0,
-        Director = 1,
-        Teacher = 2,
-        Helper = 3,
-        Coordinator = 4,
-        Treasurer = 5
+        Student = 1,
+        Director = 2,
+        Teacher = 3,
+        Helper = 4,
+        Coordinator = 5,
+        Treasurer = 6
     }
 
     public enum Gender

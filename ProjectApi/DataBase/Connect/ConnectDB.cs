@@ -51,7 +51,7 @@ namespace ProjectApi.ConnectDB
             }
         }
 
-        public static DataTable DbGet(Procedures proc, SchemaDB schema, object parameters)
+        public static DataTable DbGet(Procedures proc, SchemaDB schema, List<object> parameters)
         {
             string? procedure= Enum.GetName(typeof(Procedures), proc);
 
@@ -67,9 +67,26 @@ namespace ProjectApi.ConnectDB
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    foreach (PropertyInfo model in parameters.GetType().GetProperties())
+                    List<string> paramList = new List<string>();
+
+                    foreach (var parameter in parameters)
                     {
-                        command.Parameters.AddWithValue("Param" + model.Name, model.GetValue(parameters, null));
+                        if(parameter != null)
+                        {
+                            foreach (PropertyInfo model in parameter.GetType().GetProperties())
+                            {
+                                if (model.GetValue(parameter, null) == null)
+                                    continue;
+
+                                string param = "Param" + model.Name;
+
+                                if (!paramList.Any(s => param.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0))
+                                {
+                                    command.Parameters.AddWithValue(param, model.GetValue(parameter, null));
+                                    paramList.Add(param);
+                                }
+                            }
+                        }                  
                     }
 
                     connection.Open();

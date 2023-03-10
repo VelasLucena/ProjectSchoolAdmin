@@ -6,7 +6,7 @@ namespace ProfileModels
 	public class UserModel
 	{
 		[Key]
-		public int UserId { get; set; }
+		public int? UserId { get; set; }
 
 		[DataType(DataType.Text)]
 		public string? Name { get; set; }

@@ -7,7 +7,7 @@ namespace ProjectApi.Mapper
 {
     public class UserMapper
     {
-        public static UserModel UserInputMapper(string jsonInput)
+        public static UserModel UserPostInputMapper(string jsonInput)
         {
             UserModel createUser = JsonConvert.DeserializeObject<UserModel>(jsonInput);
 
@@ -19,6 +19,13 @@ namespace ProjectApi.Mapper
             createUser.UserPermissions.CreationUserId = createUser.CreationUserId;
 
             return createUser;
+        }
+
+        public static UserModel UserGetInputMapper(string jsonInput)
+        {
+            UserModel user = JsonConvert.DeserializeObject<UserModel>(jsonInput);
+
+            return user;
         }
     }
 }

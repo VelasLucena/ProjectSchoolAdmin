@@ -25,7 +25,7 @@ namespace ProjectApi.Controllers
                     jsonRequest.json = await reader.ReadToEndAsync();
                 }
 
-                UserModel createUser = UserMapper.UserInputMapper(jsonRequest.json);
+                UserModel createUser = UserMapper.UserGetInputMapper(jsonRequest.json);
 
                 bool modelValid = Validation.ValidUserCreation(createUser);
 
@@ -44,6 +44,6 @@ namespace ProjectApi.Controllers
             }
 
             return Ok();
-        }
+        }       
     }
 }
